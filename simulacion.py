@@ -5,8 +5,8 @@ import sys
 
 ## variables de control
 cant2 = 8500
-cant16 = 11500
-cant125 = 60000
+cant16 = 12000
+cant125 =50000
 imp = 30
 
 ## TEF
@@ -48,11 +48,12 @@ def intervaloPedido():
     intervalo = stats.pearson3.rvs(skew = 2.237830897269321,loc = 0.14514574269715144,scale = 0.16240581380739422, random_state=None)
     return intervalo
 def generarKG():
-    sinRedondear = stats.foldcauchy.rvs(c = 0.04378797938418702,loc = 199.99998479055455,scale = 389.4065466129497,random_state=None)
+    sinRedondear = 12001
+    while sinRedondear > 12000:
+        sinRedondear = stats.foldcauchy.rvs(c = 0.04378797938418702,loc = 199.99998479055455,scale = 389.4065466129497,random_state=None)
     return sinRedondear - sinRedondear%10
 def generarEspesor():
     return stats.halfgennorm.rvs(beta = 0.7644947456920824,loc = 0.29999999967008933,scale = 0.5613952812257972, random_state=None)
-
 cantSepaso = 0
 while(t < tf):
     if int(tpllp) < tpllmp:
@@ -104,7 +105,6 @@ pmps2 = (smps2/t)*imp
 pmps16 = smps16*imp/t
 pmps125 = smps125*imp/t
 
-print(cantSepaso)
 print("porcentaje de pedidos de materia prima de 2.0 rechazados = ",pkp2)
 print("porcentaje de pedidos de materia prima de 1.6 rechazados = ",pkp16)
 print("porcentaje de pedidos de materia prima de 1.25 rechazados = ",pkp125)
