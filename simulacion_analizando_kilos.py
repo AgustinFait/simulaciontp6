@@ -3,12 +3,14 @@ import random
 from scipy import stats
 import sys
 
-tf = 5000
+tf = 50000
+
+total_comprado2=0
 
 ## variables de control
-cant2 = 6000#8500
-cant16 = 0#11500
-cant125 = 0#60000
+cant2 = 20000#8500
+cant16 = 20000#11500
+cant125 = 50000#60000
 imp = 30
 
 ## TEF
@@ -57,7 +59,7 @@ def intervaloPedido():
     intervalo = stats.pearson3.rvs(skew = 2.237830897269321,loc = 0.14514574269715144,scale = 0.16240581380739422, random_state=None)
     return intervalo
 def generarKG():
-    sinRedondear = stats.foldcauchy.rvs(c = 0.04378797938418702,loc = 199.99998479055455,scale = 389.4065466129497,random_state=None)
+    sinRedondear = stats.foldcauchy.rvs(c = 0.04378797938418702,loc = 199.99998479055455,scale = 089.4065466129497,random_state=None)
     return sinRedondear - sinRedondear%10
 def generarEspesor():
     return stats.halfgennorm.rvs(beta = 0.7644947456920824,loc = 0.29999999967008933,scale = 0.5613952812257972, random_state=None)
@@ -69,7 +71,7 @@ while(t < tf):
         t = tpllp
         ip = intervaloPedido()
         tpllp = t + ip
-        kg = generarKG()/10
+        kg = generarKG()
         # print(kg)
         espesor = generarEspesor()
         if espesor < 2 and espesor > 0.7:
@@ -103,14 +105,15 @@ while(t < tf):
         # ganancia -= staActual2*ca
         if staActual2 + cant2 +staActual16 + cant16 + staActual125 + cant125 < tope:
             staActual2 += cant2
+            total_comprado2 +=cant2
             staActual16 += cant16
             staActual125 += cant125
         else:
             cantSepaso+=1
-            #libre = tope - (staActual125 + staActual16 + staActual2)
-            #staActual2 += libre * cant2 / (cant2 + cant125 + cant16)
-            #staActual16 += libre * cant16 / (cant2 + cant125 + cant16)
-            #staActual125 += libre * cant125 / (cant2 + cant125 + cant16)
+            libre = tope - (staActual125 + staActual16 + staActual2)
+            staActual2 += libre * cant2 / (cant2 + cant125 + cant16)
+            staActual16 += libre * cant16 / (cant2 + cant125 + cant16)
+            staActual125 += libre * cant125 / (cant2 + cant125 + cant16)
             
 
 
@@ -124,10 +127,22 @@ print("promedio de materia prima de 1.6 sobrante por intervalo = ",pmps16)
 print("promedio de materia prima de 1.25 sobrante por intervalo = ",pmps125)
 print("")
 
+print("Compra_2.00",cant2)
+print("Compra_1.60",cant16)
+print("Compra_1.25",cant125)
+print("")
+print("tf",tf)
+
+
+print("")
 if cantSepaso > 0:
     print("Intervalo promedio entre depósito lleno",tf/cantSepaso)
 print("kg_perdidos_2 / kg_pedidos_2 [%] = ",kg2perdidos*100/kg2pedidos)
 print("kg_perdidos_16 / kg_pedidos_16 [%] = ",kg16perdidos*100/kg16pedidos)
 print("kg_perdidos_125 / kg_pedidos_125 [%] = ",kg125perdidos*100/kg125pedidos)
-print("Ocupación promedio del depósito por intervalo [%] = ", (tope - (pmps2+pmps16+pmps125))*100/tope)
 print("kg_pedidos_totales / dias = ", (kg125pedidos + kg16pedidos + kg2pedidos)/t)
+print("kg_perdidos_totales / dias = ", (kg125perdidos + kg16perdidos + kg2perdidos)/t)
+print("\033[32mOcupación promedio del depósito por intervalo [%] = ", (tope - (pmps2+pmps16+pmps125))*100/tope)
+print("kg_perdidos_totales / kg_pedidos_totales [%] = ", (kg125perdidos + kg16perdidos + kg2perdidos)*100/(kg125pedidos + kg16pedidos + kg2pedidos))
+
+print("\033[0m")
